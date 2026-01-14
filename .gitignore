@@ -12,11 +12,13 @@ build/
 .venv/
 venv/
 
-# Results & outputs
-results/*.png
-results/*.csv
-results/*.json
+# Results & outputs - ignore all subdirectories and generated files
+results/*/
 !results/.gitkeep
+results/**/*.png
+results/**/*.pdf
+results/**/*.csv
+results/**/*.json
 
 # Jupyter
 .ipynb_checkpoints/
@@ -36,3 +38,18 @@ tmp*/
 
 # RunPod
 runpod_*.log
+
+# Model checkpoints (future-proofing for when training models)
+*.pt
+*.pth
+*.h5
+*.pkl
+*.pickle
+
+# Coverage and testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Type checking
+.mypy_cache/

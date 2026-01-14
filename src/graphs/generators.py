@@ -116,3 +116,118 @@ def generate_hierarchical_dag(
             edges.append([i, j])
 
     return torch.tensor(edges, dtype=torch.long).t(), labels
+
+
+def generate_small_graph(name: str) -> tuple[torch.Tensor, int, str]:
+    """
+    Generate pedagogical graphs for spectral analysis.
+
+    Args:
+        name: Graph name (see options below)
+
+    Returns:
+        edge_index: [2, E] tensor of directed edges
+        num_nodes: Number of nodes in the graph
+        description: String explaining the graph's pedagogical purpose
+
+    Available graphs:
+        - triangle_cycle: 3-node directed cycle
+        - path_4: 4-node directed path
+        - diamond: 4-node diamond (two parallel paths)
+        - cycle_4: 4-node directed cycle
+        - star_out: 5-node star (hub broadcasts)
+        - star_in: 5-node star (hub aggregates)
+        - hexagon: 6-node directed cycle
+        - two_triangles: 6-node two-community graph
+        - hierarchical_3level: 9-node hierarchical structure
+        - complete_4: 4-node complete graph (all bidirectional)
+    """
+    if name == "triangle_cycle":
+        # 0→1→2→0 (directed cycle)
+        edges = [[0, 1], [1, 2], [2, 0]]
+        num_nodes = 3
+        description = "Simplest non-trivial cycle showing direction encoding via phase"
+
+    elif name == "path_4":
+        # 0→1→2→3 (directed path, no cycles)
+        edges = [[0, 1], [1, 2], [2, 3]]
+        num_nodes = 4
+        description = "Hierarchical flow without cycles - eigenvectors show gradient"
+
+    elif name == "diamond":
+        # 0→1, 0→2, 1→3, 2→3 (two parallel paths)
+        edges = [[0, 1], [0, 2], [1, 3], [2, 3]]
+        num_nodes = 4
+        description = "Multiple pathways demonstrating eigenvector localization"
+
+    elif name == "cycle_4":
+        # 0→1→2→3→0 (simple cycle)
+        edges = [[0, 1], [1, 2], [2, 3], [3, 0]]
+        num_nodes = 4
+        description = "Simple cycle for parameter sweeps"
+
+    elif name == "star_out":
+        # 0→1, 0→2, 0→3, 0→4 (broadcast pattern)
+        edges = [[0, 1], [0, 2], [0, 3], [0, 4]]
+        num_nodes = 5
+        description = "Hub centrality (broadcast) - eigenvector localization on hub"
+
+    elif name == "star_in":
+        # 1→0, 2→0, 3→0, 4→0 (aggregation pattern)
+        edges = [[1, 0], [2, 0], [3, 0], [4, 0]]
+        num_nodes = 5
+        description = "Hub centrality (aggregation) - contrast with star_out"
+
+    elif name == "hexagon":
+        # 0→1→2→3→4→5→0 (6-node cycle)
+        edges = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
+        num_nodes = 6
+        description = "Larger cycle for structural balance exploration"
+
+    elif name == "two_triangles":
+        # Two triangles (0,1,2) and (3,4,5) with bidirectional bridge 2↔3
+        edges = [
+            # Triangle 1: 0→1→2→0
+            [0, 1], [1, 2], [2, 0],
+            # Triangle 2: 3→4→5→3
+            [3, 4], [4, 5], [5, 3],
+            # Bridge (bidirectional)
+            [2, 3], [3, 2]
+        ]
+        num_nodes = 6
+        description = "Community structure detection via Fiedler vector"
+
+    elif name == "hierarchical_3level":
+        # 3 levels × 3 nodes, edges flow forward
+        # Level 0: [0,1,2], Level 1: [3,4,5], Level 2: [6,7,8]
+        edges = [
+            # Level 0 → Level 1
+            [0, 3], [0, 4],
+            [1, 4], [1, 5],
+            [2, 5],
+            # Level 1 → Level 2
+            [3, 6],
+            [4, 7],
+            [5, 8],
+        ]
+        num_nodes = 9
+        description = "Miniature hierarchical DAG - eigenvectors align with levels"
+
+    elif name == "complete_4":
+        # All edges bidirectional (fully connected)
+        edges = [
+            [0, 1], [1, 0],
+            [0, 2], [2, 0],
+            [0, 3], [3, 0],
+            [1, 2], [2, 1],
+            [1, 3], [3, 1],
+            [2, 3], [3, 2],
+        ]
+        num_nodes = 4
+        description = "Baseline - no directional bias, all edges reciprocal"
+
+    else:
+        raise ValueError(f"Unknown graph name: {name}. See docstring for available options.")
+
+    edge_index = torch.tensor(edges, dtype=torch.long).t()
+    return edge_index, num_nodes, description
