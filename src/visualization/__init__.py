@@ -1,17 +1,9 @@
-"""Visualization utilities for spectral analysis."""
+"""Visualization utilities for graphs."""
 
-from .spectral_plots import (
-    plot_eigenvalue_spectrum,
-    plot_eigenvector_on_graph,
-    plot_spectrum_comparison,
-    plot_parameter_sweep,
-    plot_eigenvector_heatmap,
-)
+from .graph_viz import visualize_graph, visualize_csbm_structure, compare_networks
 
 __all__ = [
-    'plot_eigenvalue_spectrum',
-    'plot_eigenvector_on_graph',
-    'plot_spectrum_comparison',
-    'plot_parameter_sweep',
-    'plot_eigenvector_heatmap',
+    "visualize_graph",
+    "visualize_csbm_structure",
+    "compare_networks",
 ]
