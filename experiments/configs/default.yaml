@@ -1,0 +1,22 @@
+# Default experiment configuration
+
+experiment:
+  name: structural_balance
+  num_trials: 10
+
+graph:
+  n: 100          # Number of nodes
+  k: 4            # Number of classes
+  p_in: 0.3       # Intra-class edge probability
+  p_out: 0.05     # Inter-class edge probability
+
+model:
+  in_dim: 16
+  hidden_dim: 32
+  q: 0.1          # Phase parameter for MagNet
+
+training:
+  epochs: 200
+  lr: 0.01
+  weight_decay: 0.0005
+  train_ratio: 0.6
